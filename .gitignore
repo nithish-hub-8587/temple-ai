@@ -1,0 +1,17 @@
+venv/
+.venv/
+__pycache__/
+*.pyc
+.env
+.env.*
+!.env.example
+missing_persons.db
+missing_persons_backup.db
+known_faces/
+*.jpg
+*.jpeg
+*.png
+*.mp4
+*.avi
+health_status.json
+latest_frame.jpg

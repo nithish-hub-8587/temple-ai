@@ -1,0 +1,4830 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Temple AI - Security Dashboard</title>
+
+
+    <style>
+
+        /* =====================================================
+           GLOBAL
+           ===================================================== */
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+
+        body {
+
+            margin: 0;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #eef2ff,
+                    #f8fafc
+                );
+
+            color: #111827;
+        }
+
+
+        button,
+        input,
+        textarea {
+            font-family: inherit;
+        }
+
+
+        button {
+            cursor: pointer;
+        }
+
+
+        /* =====================================================
+           HEADER
+           ===================================================== */
+
+        header {
+
+            position: sticky;
+
+            top: 0;
+
+            z-index: 1000;
+
+            height: 74px;
+
+            padding: 0 30px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #0f172a,
+                    #172554
+                );
+
+            color: white;
+
+            box-shadow:
+                0 5px 25px
+                rgba(15,23,42,0.20);
+        }
+
+
+        .header-left {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 14px;
+        }
+
+
+        .logo-icon {
+
+            width: 46px;
+
+            height: 46px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border-radius: 12px;
+
+            background:
+                rgba(255,255,255,0.12);
+
+            font-size: 25px;
+        }
+
+
+        .logo-title {
+
+            font-size: 22px;
+
+            font-weight: 800;
+
+            letter-spacing: 0.5px;
+        }
+
+
+        .logo-subtitle {
+
+            margin-top: 3px;
+
+            font-size: 12px;
+
+            color: #cbd5e1;
+        }
+
+
+        .live-pill {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            padding: 9px 16px;
+
+            border-radius: 30px;
+
+            background:
+                rgba(34,197,94,0.15);
+
+            border:
+                1px solid
+                rgba(34,197,94,0.45);
+
+            color: #bbf7d0;
+
+            font-size: 13px;
+
+            font-weight: 700;
+        }
+
+
+        .live-dot {
+
+            width: 9px;
+
+            height: 9px;
+
+            border-radius: 50%;
+
+            background: #22c55e;
+
+            box-shadow:
+                0 0 12px #22c55e;
+
+            animation:
+                livePulse 1.5s infinite;
+        }
+
+
+        @keyframes livePulse {
+
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.5;
+                transform: scale(0.75);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+        }
+
+
+        /* =====================================================
+           MAIN CONTAINER
+           ===================================================== */
+
+        .container {
+
+            width: min(
+                1250px,
+                calc(100% - 40px)
+            );
+
+            margin: 0 auto;
+
+            padding: 30px 0 50px;
+        }
+
+
+        /* =====================================================
+           EMERGENCY ALERT
+           ===================================================== */
+
+        /*
+           IMPORTANT:
+           This alert is FIXED to the browser viewport.
+
+           Therefore scrolling the dashboard will NOT
+           make the emergency alert disappear.
+        */
+
+        #criticalAlert {
+
+            position: fixed;
+
+            top: 88px;
+
+            left: 50%;
+
+            transform:
+                translateX(-50%)
+                translateY(-180px);
+
+            width:
+                min(
+                    920px,
+                    calc(100vw - 40px)
+                );
+
+            display: none;
+
+            opacity: 0;
+
+            z-index: 2147483000;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #7f1d1d,
+                    #dc2626
+                );
+
+            color: white;
+
+            border:
+                2px solid
+                rgba(254,202,202,0.85);
+
+            border-radius: 18px;
+
+            box-shadow:
+                0 25px 80px
+                rgba(0,0,0,0.45),
+                0 0 35px
+                rgba(239,68,68,0.55);
+
+            transition:
+                transform 0.35s ease,
+                opacity 0.35s ease;
+
+            pointer-events: none;
+        }
+
+
+        #criticalAlert.show {
+
+            display: block;
+
+            opacity: 1;
+
+            transform:
+                translateX(-50%)
+                translateY(0);
+
+            pointer-events: auto;
+
+        }
+
+
+        .critical-inner {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 18px;
+
+            padding: 18px 20px;
+        }
+
+
+        .critical-icon {
+
+            width: 58px;
+
+            height: 58px;
+
+            min-width: 58px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border-radius: 50%;
+
+            background:
+                rgba(255,255,255,0.15);
+
+            font-size: 30px;
+
+            animation:
+                emergencyPulse 1s infinite;
+        }
+
+
+        @keyframes emergencyPulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.12);
+            }
+
+        }
+
+
+        .critical-text {
+
+            flex: 1;
+
+            min-width: 0;
+        }
+
+
+        .critical-label {
+
+            font-size: 12px;
+
+            font-weight: 800;
+
+            letter-spacing: 1.5px;
+
+            margin-bottom: 4px;
+        }
+
+
+        .critical-text h2 {
+
+            margin: 0;
+
+            font-size: 23px;
+
+            line-height: 1.2;
+
+        }
+
+
+        .critical-text p {
+
+            margin: 6px 0 0;
+
+            font-size: 14px;
+
+            color: #fee2e2;
+        }
+
+
+        .critical-actions {
+
+            display: flex;
+
+            gap: 9px;
+
+            flex-shrink: 0;
+        }
+
+
+        .critical-actions button {
+
+            border: none;
+
+            padding: 11px 15px;
+
+            border-radius: 9px;
+
+            font-size: 13px;
+
+            font-weight: 800;
+
+            transition: 0.2s;
+
+            white-space: nowrap;
+        }
+
+
+        .critical-view {
+
+            background: white;
+
+            color: #991b1b;
+        }
+
+
+        .critical-ack {
+
+            background: #450a0a;
+
+            color: white;
+
+            border:
+                1px solid
+                rgba(255,255,255,0.25)
+                !important;
+        }
+
+
+        .critical-actions button:hover {
+
+            transform:
+                translateY(-2px);
+
+        }
+
+
+        /*
+           FULLSCREEN FIX
+
+           When cameraWrapper becomes fullscreen,
+           the JavaScript moves criticalAlert inside it.
+
+           This ensures the alert remains visible
+           in fullscreen mode.
+        */
+
+        :fullscreen #criticalAlert {
+
+            position: fixed;
+
+            top: 25px;
+
+            left: 50%;
+
+            z-index: 2147483647;
+        }
+
+
+        :-webkit-full-screen #criticalAlert {
+
+            position: fixed;
+
+            top: 25px;
+
+            left: 50%;
+
+            z-index: 2147483647;
+        }
+
+
+        /* =====================================================
+           DASHBOARD HERO
+           ===================================================== */
+
+        .hero {
+
+            margin-bottom: 25px;
+
+            padding: 25px;
+
+            border-radius: 20px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #111827,
+                    #1e3a8a
+                );
+
+            color: white;
+
+            box-shadow:
+                0 15px 40px
+                rgba(30,58,138,0.20);
+        }
+
+
+        .hero h1 {
+
+            margin: 0;
+
+            font-size: 28px;
+        }
+
+
+        .hero p {
+
+            margin: 8px 0 0;
+
+            color: #cbd5e1;
+
+            font-size: 14px;
+        }
+
+
+        /* =====================================================
+           STAT CARDS
+           ===================================================== */
+
+        .stats {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(6, 1fr);
+
+            gap: 15px;
+
+            margin-bottom: 25px;
+        }
+
+
+        .stat-card {
+
+            position: relative;
+
+            overflow: hidden;
+
+            background: white;
+
+            border:
+                1px solid
+                #e5e7eb;
+
+            border-radius: 16px;
+
+            padding: 18px;
+
+            min-height: 120px;
+
+            box-shadow:
+                0 6px 20px
+                rgba(15,23,42,0.06);
+        }
+
+
+        .stat-card::after {
+
+            content: "";
+
+            position: absolute;
+
+            right: -25px;
+
+            bottom: -30px;
+
+            width: 90px;
+
+            height: 90px;
+
+            border-radius: 50%;
+
+            background:
+                #eef2ff;
+        }
+
+
+        .stat-title {
+
+            position: relative;
+
+            z-index: 2;
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+            color: #64748b;
+
+            letter-spacing: 0.5px;
+        }
+
+
+        .stat-number {
+
+            position: relative;
+
+            z-index: 2;
+
+            margin-top: 9px;
+
+            font-size: 28px;
+
+            font-weight: 800;
+
+            color: #0f172a;
+        }
+
+
+        .stat-status {
+
+            position: relative;
+
+            z-index: 2;
+
+            font-size: 22px;
+
+        }
+
+
+        /* =====================================================
+           CARD
+           ===================================================== */
+
+        .card {
+
+            background: white;
+
+            border:
+                1px solid
+                #e5e7eb;
+
+            border-radius: 18px;
+
+            padding: 22px;
+
+            margin-bottom: 25px;
+
+            box-shadow:
+                0 6px 22px
+                rgba(15,23,42,0.06);
+        }
+
+
+        .card-header {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            margin-bottom: 18px;
+        }
+
+
+        .card-title {
+
+            margin: 0;
+
+            font-size: 19px;
+
+            color: #0f172a;
+        }
+
+
+        .card-subtitle {
+
+            margin: 5px 0 0;
+
+            color: #64748b;
+
+            font-size: 13px;
+        }
+
+
+        /* =====================================================
+           CAMERA CONTROL
+           ===================================================== */
+
+        .camera-control {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+            flex-wrap: wrap;
+        }
+
+
+        .monitor-status {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            font-weight: 800;
+
+        }
+
+
+        .status-online {
+
+            color: #16a34a;
+        }
+
+
+        .status-offline {
+
+            color: #dc2626;
+        }
+
+
+        .camera-buttons {
+
+            display: flex;
+
+            gap: 10px;
+
+            flex-wrap: wrap;
+        }
+
+
+        .btn {
+
+            border: none;
+
+            padding: 11px 17px;
+
+            border-radius: 9px;
+
+            font-weight: 700;
+
+            transition: 0.2s;
+        }
+
+
+        .btn:hover {
+
+            transform:
+                translateY(-2px);
+        }
+
+
+        .btn:disabled {
+
+            opacity: 0.5;
+
+            cursor: not-allowed;
+
+            transform: none;
+        }
+
+
+        .btn-start {
+
+            background: #16a34a;
+
+            color: white;
+        }
+
+
+        .btn-stop {
+
+            background: #dc2626;
+
+            color: white;
+        }
+
+
+        .btn-fullscreen {
+
+            background: #111827;
+
+            color: white;
+        }
+
+
+        /* =====================================================
+           CAMERA
+           ===================================================== */
+
+        .camera-wrapper {
+
+            position: relative;
+
+            width: 100%;
+
+            min-height: 450px;
+
+            overflow: hidden;
+
+            background: #020617;
+
+            border-radius: 16px;
+
+            border:
+                1px solid
+                #1e293b;
+        }
+
+
+        .camera-wrapper:fullscreen {
+
+            width: 100vw;
+
+            height: 100vh;
+
+            min-height: 100vh;
+
+            border-radius: 0;
+
+            background: #000;
+        }
+
+
+        .camera-wrapper:-webkit-full-screen {
+
+            width: 100vw;
+
+            height: 100vh;
+
+            min-height: 100vh;
+
+            border-radius: 0;
+
+            background: #000;
+        }
+
+
+        #liveCamera {
+
+            display: block;
+
+            width: 100%;
+
+            height: 450px;
+
+            object-fit: contain;
+
+            background: #020617;
+        }
+
+
+        .camera-wrapper:fullscreen #liveCamera {
+
+            width: 100vw;
+
+            height: 100vh;
+
+        }
+
+
+        .camera-wrapper:-webkit-full-screen #liveCamera {
+
+            width: 100vw;
+
+            height: 100vh;
+
+        }
+
+
+        .camera-overlay {
+
+            position: absolute;
+
+            left: 15px;
+
+            top: 15px;
+
+            display: flex;
+
+            gap: 8px;
+
+            z-index: 20;
+        }
+
+
+        .camera-chip {
+
+            padding: 7px 11px;
+
+            border-radius: 8px;
+
+            background:
+                rgba(15,23,42,0.80);
+
+            color: white;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            backdrop-filter: blur(8px);
+        }
+
+
+        .camera-fullscreen-button {
+
+            position: absolute;
+
+            right: 15px;
+
+            top: 15px;
+
+            z-index: 30;
+
+            border: none;
+
+            padding: 9px 12px;
+
+            border-radius: 8px;
+
+            background:
+                rgba(15,23,42,0.85);
+
+            color: white;
+
+            font-weight: 700;
+
+            cursor: pointer;
+        }
+
+
+        .camera-offline {
+
+            position: absolute;
+
+            inset: 0;
+
+            display: none;
+
+            align-items: center;
+
+            justify-content: center;
+
+            flex-direction: column;
+
+            background:
+                rgba(2,6,23,0.90);
+
+            color: white;
+
+            z-index: 10;
+
+        }
+
+
+        .camera-offline.show {
+
+            display: flex;
+        }
+
+
+        .offline-icon {
+
+            font-size: 48px;
+
+            margin-bottom: 10px;
+        }
+
+
+        .offline-title {
+
+            font-size: 21px;
+
+            font-weight: 800;
+        }
+
+
+        .offline-subtitle {
+
+            margin-top: 7px;
+
+            color: #94a3b8;
+
+            font-size: 13px;
+        }
+
+
+        /* =====================================================
+           CAMERA HEALTH
+           ===================================================== */
+
+        .health-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 12px;
+        }
+
+
+        .health-item {
+
+            padding: 15px;
+
+            border-radius: 12px;
+
+            background: #f8fafc;
+
+            border:
+                1px solid
+                #e2e8f0;
+        }
+
+
+        .health-label {
+
+            color: #64748b;
+
+            font-size: 12px;
+
+            font-weight: 700;
+        }
+
+
+        .health-value {
+
+            margin-top: 7px;
+
+            font-size: 18px;
+
+            font-weight: 800;
+
+            color: #0f172a;
+        }
+
+
+        /* =====================================================
+           FORM
+           ===================================================== */
+
+        .form-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 18px;
+        }
+
+
+        .form-group {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 7px;
+        }
+
+
+        .form-group.full {
+
+            grid-column: 1 / -1;
+        }
+
+
+        .form-group label {
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            color: #334155;
+        }
+
+
+        .form-group input,
+        .form-group textarea {
+
+            width: 100%;
+
+            padding: 12px 13px;
+
+            border:
+                1px solid
+                #cbd5e1;
+
+            border-radius: 9px;
+
+            background: white;
+
+            font-size: 14px;
+
+            outline: none;
+
+            transition: 0.2s;
+        }
+
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+
+            border-color: #2563eb;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(37,99,235,0.10);
+        }
+
+
+        .form-group textarea {
+
+            min-height: 100px;
+
+            resize: vertical;
+        }
+
+
+        .register-button {
+
+            margin-top: 18px;
+
+            border: none;
+
+            padding: 13px 20px;
+
+            border-radius: 9px;
+
+            background: #2563eb;
+
+            color: white;
+
+            font-weight: 800;
+
+            cursor: pointer;
+        }
+
+
+        /* =====================================================
+           REFRESH
+           ===================================================== */
+
+        .refresh-button {
+
+            border: none;
+
+            padding: 11px 17px;
+
+            border-radius: 9px;
+
+            background: #2563eb;
+
+            color: white;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            margin-bottom: 18px;
+        }
+
+
+        /* =====================================================
+           ALERT HISTORY
+           ===================================================== */
+
+        .alert-row {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            padding: 15px;
+
+            margin-bottom: 10px;
+
+            border:
+                1px solid
+                #e2e8f0;
+
+            border-radius: 12px;
+
+            background: #f8fafc;
+        }
+
+
+        .alert-details {
+
+            min-width: 0;
+        }
+
+
+        .alert-name {
+
+            font-weight: 800;
+
+            color: #b91c1c;
+        }
+
+
+        .alert-details p {
+
+            margin: 5px 0 0;
+
+            font-size: 13px;
+
+            color: #64748b;
+        }
+
+
+        .history-button {
+
+            flex-shrink: 0;
+
+            border: none;
+
+            padding: 10px 13px;
+
+            border-radius: 8px;
+
+            background: #111827;
+
+            color: white;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+        }
+
+
+        .status-badge {
+
+            display: inline-block;
+
+            margin-top: 7px;
+
+            padding: 5px 9px;
+
+            border-radius: 20px;
+
+            font-size: 11px;
+
+            font-weight: 800;
+
+            background: #fee2e2;
+
+            color: #991b1b;
+        }
+
+
+        .status-badge.acknowledged {
+
+            background: #dcfce7;
+
+            color: #166534;
+        }
+
+
+        .no-alerts {
+
+            padding: 30px;
+
+            text-align: center;
+
+            color: #64748b;
+        }
+
+
+        /* =====================================================
+           REGISTERED PERSONS
+           ===================================================== */
+
+        .person-row {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 15px;
+
+            margin-bottom: 10px;
+
+            border:
+                1px solid
+                #e2e8f0;
+
+            border-radius: 12px;
+
+            background: #f8fafc;
+        }
+
+
+        .person-name {
+
+            font-size: 17px;
+
+            font-weight: 800;
+
+            color: #0f172a;
+        }
+
+
+        .person-row p {
+
+            margin: 6px 0 0;
+
+            color: #64748b;
+
+            font-size: 13px;
+        }
+
+
+        /* =====================================================
+           MODAL
+           ===================================================== */
+
+        #personModal {
+
+            position: fixed;
+
+            inset: 0;
+
+            display: none;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 20px;
+
+            background:
+                rgba(2,6,23,0.75);
+
+            z-index: 2147482000;
+
+            backdrop-filter:
+                blur(5px);
+        }
+
+
+        .modal-content {
+
+            position: relative;
+
+            width: min(
+                600px,
+                100%
+            );
+
+            max-height: 90vh;
+
+            overflow-y: auto;
+
+            padding: 25px;
+
+            border-radius: 18px;
+
+            background: white;
+
+            box-shadow:
+                0 25px 80px
+                rgba(0,0,0,0.35);
+        }
+
+
+        .modal-content h2 {
+
+            margin-top: 0;
+
+            color: #0f172a;
+        }
+
+
+        .close {
+
+            position: absolute;
+
+            right: 18px;
+
+            top: 12px;
+
+            font-size: 28px;
+
+            color: #64748b;
+
+            cursor: pointer;
+        }
+
+
+        .person-photo {
+
+            display: block;
+
+            width: 190px;
+
+            height: 190px;
+
+            margin: 18px auto;
+
+            object-fit: cover;
+
+            border-radius: 14px;
+
+            border:
+                3px solid
+                #e2e8f0;
+        }
+
+
+        .person-info {
+
+            padding: 17px;
+
+            border-radius: 12px;
+
+            background: #f8fafc;
+
+        }
+
+
+        .person-info p {
+
+            margin: 10px 0;
+
+            font-size: 14px;
+
+        }
+
+
+        .verified {
+
+            color: #dc2626;
+
+            font-weight: 800;
+        }
+
+
+        /* =====================================================
+           TOAST
+           ===================================================== */
+
+        #toast {
+
+            position: fixed;
+
+            right: 25px;
+
+            bottom: 25px;
+
+            z-index: 2147483001;
+
+            display: none;
+
+            padding: 13px 18px;
+
+            border-radius: 10px;
+
+            background: #111827;
+
+            color: white;
+
+            box-shadow:
+                0 10px 30px
+                rgba(0,0,0,0.25);
+
+            font-size: 13px;
+
+            font-weight: 700;
+        }
+
+
+        #toast.show {
+
+            display: block;
+
+            animation:
+                toastIn 0.3s ease;
+        }
+
+
+        @keyframes toastIn {
+
+            from {
+
+                opacity: 0;
+
+                transform:
+                    translateY(10px);
+
+            }
+
+            to {
+
+                opacity: 1;
+
+                transform:
+                    translateY(0);
+
+            }
+
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+           ===================================================== */
+
+        @media (max-width: 1100px) {
+
+            .stats {
+
+                grid-template-columns:
+                    repeat(3, 1fr);
+
+            }
+
+        }
+
+
+        @media (max-width: 800px) {
+
+            header {
+
+                padding: 0 15px;
+
+            }
+
+
+            .logo-subtitle {
+
+                display: none;
+
+            }
+
+
+            .live-pill {
+
+                padding:
+                    8px 10px;
+
+            }
+
+
+            .container {
+
+                width:
+                    calc(100% - 24px);
+
+            }
+
+
+            .stats {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+
+            }
+
+
+            .health-grid {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+
+            }
+
+
+            .form-grid {
+
+                grid-template-columns:
+                    1fr;
+
+            }
+
+
+            .form-group.full {
+
+                grid-column: auto;
+
+            }
+
+
+            .critical-inner {
+
+                flex-wrap: wrap;
+
+            }
+
+
+            .critical-actions {
+
+                width: 100%;
+
+            }
+
+
+            .critical-actions button {
+
+                flex: 1;
+
+            }
+
+        }
+
+
+        @media (max-width: 550px) {
+
+            .logo-title {
+
+                font-size: 18px;
+
+            }
+
+
+            .stats {
+
+                grid-template-columns:
+                    1fr;
+
+            }
+
+
+            .health-grid {
+
+                grid-template-columns:
+                    1fr;
+
+            }
+
+
+            .camera-wrapper {
+
+                min-height: 300px;
+
+            }
+
+
+            #liveCamera {
+
+                height: 300px;
+
+            }
+
+
+            .alert-row {
+
+                flex-direction: column;
+
+                align-items: flex-start;
+
+            }
+
+
+            .history-button {
+
+                width: 100%;
+
+            }
+
+
+            .critical-alert {
+
+                top: 80px;
+
+                width:
+                    calc(100vw - 20px);
+
+            }
+
+
+            .critical-inner {
+
+                padding: 15px;
+
+            }
+
+
+            .critical-icon {
+
+                width: 45px;
+
+                height: 45px;
+
+                min-width: 45px;
+
+                font-size: 23px;
+
+            }
+
+
+            .critical-text h2 {
+
+                font-size: 18px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     EMERGENCY ALERT
+
+     IMPORTANT:
+     This is directly under BODY.
+
+     Therefore it remains fixed while scrolling.
+
+     During fullscreen it is temporarily moved into
+     cameraWrapper by JavaScript.
+     ========================================================= -->
+
+<div id="criticalAlert">
+
+    <div class="critical-inner">
+
+        <div class="critical-icon">
+            🚨
+        </div>
+
+
+        <div class="critical-text">
+
+            <div class="critical-label">
+                CRITICAL AI ALERT
+            </div>
+
+
+            <h2 id="alertPerson">
+                Missing Person Detected
+            </h2>
+
+
+            <p>
+
+                📷 Camera:
+                <span id="alertCamera">
+                    Camera 1
+                </span>
+
+                &nbsp; • &nbsp;
+
+                🕒
+                <span id="alertTime">
+                    --
+                </span>
+
+            </p>
+
+        </div>
+
+
+        <div class="critical-actions">
+
+            <button
+                class="critical-view"
+                onclick="viewPersonDetails()">
+
+                👤 VIEW DETAILS
+
+            </button>
+
+
+            <button
+                class="critical-ack"
+                onclick="acknowledgeAlert()">
+
+                ✓ ACKNOWLEDGE
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     HEADER
+     ========================================================= -->
+
+<header>
+
+    <div class="header-left">
+
+        <div class="logo-icon">
+            🛕
+        </div>
+
+
+        <div>
+
+            <div class="logo-title">
+                TEMPLE AI
+            </div>
+
+            <div class="logo-subtitle">
+                AI-Powered Missing Person Detection
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="live-pill">
+
+        <span class="live-dot"></span>
+
+        LIVE MONITORING
+
+    </div>
+
+</header>
+
+
+
+<!-- =========================================================
+     MAIN
+     ========================================================= -->
+
+<div class="container">
+
+
+    <!-- HERO -->
+
+    <div class="hero">
+
+        <h1>
+            🛡️ Security Control Dashboard
+        </h1>
+
+        <p>
+            Real-time AI face recognition,
+            missing-person detection and
+            emergency alert monitoring.
+        </p>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         STATISTICS
+         ===================================================== -->
+
+    <div class="stats">
+
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+                REGISTERED PERSONS
+            </div>
+
+            <div
+                class="stat-number"
+                id="registeredCount">
+
+                {{ registered_count }}
+
+            </div>
+
+        </div>
+
+
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+                TOTAL ALERTS
+            </div>
+
+            <div
+                class="stat-number"
+                id="alertCount">
+
+                {{ alert_count }}
+
+            </div>
+
+        </div>
+
+
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+                SYSTEM STATUS
+            </div>
+
+            <div
+                class="stat-number"
+                id="systemStatus">
+
+                ACTIVE
+
+            </div>
+
+        </div>
+
+
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+                CAMERA STATUS
+            </div>
+
+            <div
+                class="stat-number stat-status"
+                id="cameraStatus">
+
+                CHECKING...
+
+            </div>
+
+        </div>
+
+
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+                CAMERA FPS
+            </div>
+
+            <div
+                class="stat-number"
+                id="cameraFPS">
+
+                0
+
+            </div>
+
+        </div>
+
+
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+                RECONNECTIONS
+            </div>
+
+            <div
+                class="stat-number"
+                id="cameraReconnects">
+
+                0
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- =====================================================
+         CAMERA CONTROL
+         ===================================================== -->
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <div>
+
+                <h2 class="card-title">
+                    📷 Camera Monitoring
+                </h2>
+
+                <p class="card-subtitle">
+                    Start or stop AI camera monitoring.
+                </p>
+
+            </div>
+
+
+            <div
+                id="monitorStatus"
+                class="monitor-status status-offline">
+
+                ● OFFLINE
+
+            </div>
+
+        </div>
+
+
+        <div class="camera-control">
+
+
+            <div class="camera-buttons">
+
+                <button
+                    id="startCameraBtn"
+                    class="btn btn-start"
+                    onclick="startCamera()">
+
+                    🟢 START MONITORING
+
+                </button>
+
+
+                <button
+                    id="stopCameraBtn"
+                    class="btn btn-stop"
+                    onclick="stopCamera()">
+
+                    🔴 STOP MONITORING
+
+                </button>
+
+
+                <button
+                    class="btn btn-fullscreen"
+                    onclick="toggleFullscreen()">
+
+                    ⛶ FULL SCREEN
+
+                </button>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         LIVE CAMERA
+
+         IMPORTANT:
+         criticalAlert is NOT inside this wrapper normally.
+
+         JavaScript moves it here automatically when
+         fullscreen begins.
+         ===================================================== -->
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <div>
+
+                <h2 class="card-title">
+                    📺 Live Camera Monitoring
+                </h2>
+
+                <p class="card-subtitle">
+                    AI face detection and missing-person recognition.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="camera-wrapper"
+            id="cameraWrapper">
+
+
+            <img
+                id="liveCamera"
+                src="/video_feed"
+                alt="Temple AI Live Camera">
+
+
+            <div class="camera-overlay">
+
+                <div class="camera-chip">
+                    📷 CAMERA 1
+                </div>
+
+
+                <div
+                    class="camera-chip"
+                    id="faceCountChip">
+
+                    👤 Faces: 0
+
+                </div>
+
+            </div>
+
+
+            <button
+                class="camera-fullscreen-button"
+                onclick="toggleFullscreen()">
+
+                ⛶ Fullscreen
+
+            </button>
+
+
+            <div
+                id="cameraOffline"
+                class="camera-offline show">
+
+                <div class="offline-icon">
+                    📹
+                </div>
+
+
+                <div class="offline-title">
+                    Camera Offline
+                </div>
+
+
+                <div class="offline-subtitle">
+                    Start monitoring to activate the camera.
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         CAMERA HEALTH
+         ===================================================== -->
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <div>
+
+                <h2 class="card-title">
+                    ❤️ Camera Health Monitor
+                </h2>
+
+                <p class="card-subtitle">
+                    Real-time camera system health.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="health-grid">
+
+
+            <div class="health-item">
+
+                <div class="health-label">
+                    CAMERA ID
+                </div>
+
+                <div
+                    class="health-value"
+                    id="healthCameraId">
+
+                    -
+
+                </div>
+
+            </div>
+
+
+            <div class="health-item">
+
+                <div class="health-label">
+                    STATUS
+                </div>
+
+                <div
+                    class="health-value"
+                    id="healthStatus">
+
+                    CHECKING...
+
+                </div>
+
+            </div>
+
+
+            <div class="health-item">
+
+                <div class="health-label">
+                    FPS
+                </div>
+
+                <div
+                    class="health-value"
+                    id="healthFPS">
+
+                    0
+
+                </div>
+
+            </div>
+
+
+            <div class="health-item">
+
+                <div class="health-label">
+                    FACES DETECTED
+                </div>
+
+                <div
+                    class="health-value"
+                    id="healthFaces">
+
+                    0
+
+                </div>
+
+            </div>
+
+
+            <div class="health-item">
+
+                <div class="health-label">
+                    RECONNECT ATTEMPTS
+                </div>
+
+                <div
+                    class="health-value"
+                    id="healthReconnects">
+
+                    0
+
+                </div>
+
+            </div>
+
+
+            <div class="health-item">
+
+                <div class="health-label">
+                    LAST FRAME
+                </div>
+
+                <div
+                    class="health-value"
+                    id="healthLastFrame">
+
+                    -
+
+                </div>
+
+            </div>
+
+
+            <div class="health-item">
+
+                <div class="health-label">
+                    LAST HEALTH CHECK
+                </div>
+
+                <div
+                    class="health-value"
+                    id="healthLastCheck">
+
+                    -
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         REGISTER MISSING PERSON
+         ===================================================== -->
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <div>
+
+                <h2 class="card-title">
+                    📝 Register Missing Person
+                </h2>
+
+                <p class="card-subtitle">
+                    Add a person to the AI recognition database.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <form
+            action="/register"
+            method="POST"
+            enctype="multipart/form-data">
+
+
+            <div class="form-grid">
+
+
+                <div class="form-group">
+
+                    <label for="name">
+                        Person Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        placeholder="Enter person's name"
+                        required>
+
+                </div>
+
+
+
+                <div class="form-group">
+
+                    <label for="age">
+                        Age
+                    </label>
+
+                    <input
+                        type="number"
+                        id="age"
+                        name="age"
+                        min="1"
+                        max="120"
+                        placeholder="Enter age">
+
+                </div>
+
+
+
+                <div class="form-group full">
+
+                    <label for="description">
+                        Description
+                    </label>
+
+                    <textarea
+                        id="description"
+                        name="description"
+                        placeholder="Enter identifying description..."></textarea>
+
+                </div>
+
+
+
+                <div class="form-group full">
+
+                    <label for="photo">
+                        Person Photo
+                    </label>
+
+                    <input
+                        type="file"
+                        id="photo"
+                        name="photo"
+                        accept="image/*"
+                        required>
+
+                </div>
+
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="register-button">
+
+                ➕ REGISTER MISSING PERSON
+
+            </button>
+
+
+        </form>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         REFRESH
+         ===================================================== -->
+
+    <button
+        class="refresh-button"
+        onclick="loadAlerts()">
+
+        🔄 REFRESH ALERTS
+
+    </button>
+
+
+
+    <!-- =====================================================
+         ALERT HISTORY
+         ===================================================== -->
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <div>
+
+                <h2 class="card-title">
+                    📋 Alert History
+                </h2>
+
+                <p class="card-subtitle">
+                    Previous AI detection events.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div id="alertHistory">
+
+            {% if alerts %}
+
+                {% for alert in alerts %}
+
+                    <div class="alert-row">
+
+                        <div class="alert-details">
+
+                            <div class="alert-name">
+
+                                🚨 {{ alert[1] }}
+
+                            </div>
+
+
+                            <p>
+                                📷 Camera:
+                                {{ alert[2] }}
+                            </p>
+
+
+                            <p>
+                                🕒 Time:
+                                {{ alert[3] }}
+                            </p>
+
+
+                            <span
+                                class="status-badge
+                                {% if alert[4] == 'Acknowledged' %}
+                                acknowledged
+                                {% endif %}">
+
+                                {{ alert[4] }}
+
+                            </span>
+
+                        </div>
+
+
+                        <button
+                            class="history-button"
+                            data-alert-id="{{ alert[0] }}"
+                            data-name="{{ alert[1] }}"
+                            data-camera="{{ alert[2] }}"
+                            data-time="{{ alert[3] }}"
+                            data-status="{{ alert[4] }}"
+                            onclick="historyPersonDetails(this)">
+
+                            👤 VIEW DETAILS
+
+                        </button>
+
+                    </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <div class="no-alerts">
+
+                    No alerts yet.
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         REGISTERED PERSONS
+         ===================================================== -->
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <div>
+
+                <h2 class="card-title">
+                    👥 Registered Missing Persons
+                </h2>
+
+                <p class="card-subtitle">
+                    People currently available for AI recognition.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        {% if persons %}
+
+            {% for person in persons %}
+
+                <div class="person-row">
+
+                    <div>
+
+                        <div class="person-name">
+
+                            👤 {{ person[1] }}
+
+                        </div>
+
+
+                        <p>
+
+                            Age:
+                            {{ person[2] or "Not provided" }}
+
+                        </p>
+
+
+                        <p>
+
+                            {{ person[3] or "No description" }}
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="no-alerts">
+
+                No missing persons registered yet.
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =========================================================
+     PERSON DETAILS MODAL
+     ========================================================= -->
+
+<div id="personModal">
+
+    <div class="modal-content">
+
+
+        <span
+            class="close"
+            onclick="closeModal()">
+
+            &times;
+
+        </span>
+
+
+        <h2>
+            👤 PERSON DETAILS
+        </h2>
+
+
+        <img
+            id="personPhoto"
+            class="person-photo"
+            src=""
+            alt="Person Photo">
+
+
+        <div class="person-info">
+
+
+            <p>
+
+                <strong>Name:</strong>
+
+                <span id="personName">
+                    -
+                </span>
+
+            </p>
+
+
+            <p>
+
+                <strong>Age:</strong>
+
+                <span id="personAge">
+                    -
+                </span>
+
+            </p>
+
+
+            <p>
+
+                <strong>Description:</strong>
+
+                <span id="personDescription">
+                    -
+                </span>
+
+            </p>
+
+
+            <p>
+
+                <strong>Camera:</strong>
+
+                <span id="personCamera">
+                    -
+                </span>
+
+            </p>
+
+
+            <p>
+
+                <strong>Detection Time:</strong>
+
+                <span id="personTime">
+                    -
+                </span>
+
+            </p>
+
+
+            <p>
+
+                <strong>Verification:</strong>
+
+                <span class="verified">
+
+                    ⚠️ AI MATCH DETECTED
+
+                </span>
+
+            </p>
+
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     TOAST
+     ========================================================= -->
+
+<div id="toast"></div>
+
+
+
+<script>
+
+
+/* ============================================================
+   GLOBAL VARIABLES
+   ============================================================ */
+
+let lastAlertId = null;
+
+let currentAlert = null;
+
+let dashboardStarted = false;
+
+let alertOriginalParent = null;
+
+let alertOriginalNextSibling = null;
+
+let toastTimer = null;
+
+
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+
+function showToast(message) {
+
+    const toast =
+        document.getElementById("toast");
+
+
+    toast.textContent =
+        message;
+
+
+    toast.classList.add("show");
+
+
+    clearTimeout(toastTimer);
+
+
+    toastTimer = setTimeout(
+        function() {
+
+            toast.classList.remove("show");
+
+        },
+        3000
+    );
+
+}
+
+
+
+/* ============================================================
+   LOAD ALERTS
+   ============================================================ */
+
+async function loadAlerts() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/alerts",
+                {
+                    cache: "no-store"
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Alert API failed"
+            );
+
+        }
+
+
+        const alerts =
+            await response.json();
+
+
+        console.log(
+            "ALERT API RESPONSE:",
+            alerts
+        );
+
+
+        if (!Array.isArray(alerts)) {
+
+            console.error(
+                "Invalid alert response"
+            );
+
+            return;
+
+        }
+
+
+        /* =====================================================
+           UPDATE COUNT
+           ===================================================== */
+
+        const alertCount =
+            document.getElementById(
+                "alertCount"
+            );
+
+
+        if (alertCount) {
+
+            alertCount.textContent =
+                alerts.length;
+
+        }
+
+
+        /* =====================================================
+           SORT BY ID
+
+           This makes the newest database alert
+           independent of the API array order.
+           ===================================================== */
+
+        alerts.sort(
+            function(a, b) {
+
+                return Number(b.id || 0)
+                    - Number(a.id || 0);
+
+            }
+        );
+
+
+        /* =====================================================
+           FIRST DASHBOARD LOAD
+           ===================================================== */
+
+        if (!dashboardStarted) {
+
+            dashboardStarted = true;
+
+
+            if (alerts.length > 0) {
+
+                lastAlertId =
+                    Number(
+                        alerts[0].id
+                    );
+
+            }
+
+
+            console.log(
+                "Initial alert ID stored:",
+                lastAlertId
+            );
+
+
+            renderHistory(alerts);
+
+
+            return;
+
+        }
+
+
+        /* =====================================================
+           CHECK FOR NEW ALERT
+           ===================================================== */
+
+        if (alerts.length > 0) {
+
+            const newestAlert =
+                alerts[0];
+
+
+            const newestId =
+                Number(
+                    newestAlert.id
+                );
+
+
+            console.log(
+                "Newest Alert ID:",
+                newestId,
+                "Last Alert ID:",
+                lastAlertId
+            );
+
+
+            if (
+                lastAlertId !== null &&
+                newestId > Number(lastAlertId)
+            ) {
+
+
+                console.log(
+                    "🚨 NEW MISSING PERSON ALERT!"
+                );
+
+
+                lastAlertId =
+                    newestId;
+
+
+                showCriticalAlert(
+                    newestAlert
+                );
+
+            }
+
+        }
+
+
+        /* =====================================================
+           UPDATE HISTORY
+           ===================================================== */
+
+        renderHistory(alerts);
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "Alert loading error:",
+            error
+        );
+
+    }
+
+}
+
+
+
+/* ============================================================
+   SHOW CRITICAL ALERT
+   ============================================================ */
+
+function showCriticalAlert(alert) {
+
+    console.log(
+        "🚨 SHOWING CRITICAL ALERT:",
+        alert
+    );
+
+
+    currentAlert =
+        alert;
+
+
+    const person =
+        document.getElementById(
+            "alertPerson"
+        );
+
+
+    const camera =
+        document.getElementById(
+            "alertCamera"
+        );
+
+
+    const time =
+        document.getElementById(
+            "alertTime"
+        );
+
+
+    if (person) {
+
+        person.textContent =
+            alert.person_name ||
+            "Unknown Person";
+
+    }
+
+
+    if (camera) {
+
+        camera.textContent =
+            alert.camera_name ||
+            "Camera 1";
+
+    }
+
+
+    if (time) {
+
+        time.textContent =
+            alert.match_time ||
+            "--";
+
+    }
+
+
+    const alertBox =
+        document.getElementById(
+            "criticalAlert"
+        );
+
+
+    if (!alertBox) {
+
+        console.error(
+            "Critical alert element not found!"
+        );
+
+        return;
+
+    }
+
+
+    /*
+       IMPORTANT:
+
+       If dashboard is already in fullscreen,
+       make sure the alert is inside the
+       fullscreen camera wrapper.
+    */
+
+    if (
+        document.fullscreenElement
+    ) {
+
+        const cameraWrapper =
+            document.getElementById(
+                "cameraWrapper"
+            );
+
+
+        if (
+            cameraWrapper &&
+            alertBox.parentNode !==
+            cameraWrapper
+        ) {
+
+            cameraWrapper.appendChild(
+                alertBox
+            );
+
+        }
+
+    }
+
+
+    /* Show */
+
+    alertBox.style.display =
+        "block";
+
+
+    /*
+       Force browser reflow before
+       adding the visible class.
+    */
+
+    void alertBox.offsetWidth;
+
+
+    alertBox.classList.add(
+        "show"
+    );
+
+
+    console.log(
+        "🚨🚨 EMERGENCY ALERT VISIBLE 🚨🚨"
+    );
+
+
+    playAlertSound();
+
+}
+
+
+
+/* ============================================================
+   ALERT SOUND
+   ============================================================ */
+
+function playAlertSound() {
+
+    /*
+       Browser audio can be blocked by autoplay policies.
+
+       We therefore use Web Audio as a best-effort alert.
+       Your Python recognition script can still play its
+       own alert sound independently.
+    */
+
+    try {
+
+        const AudioContext =
+            window.AudioContext ||
+            window.webkitAudioContext;
+
+
+        if (!AudioContext) {
+
+            return;
+
+        }
+
+
+        const context =
+            new AudioContext();
+
+
+        const oscillator =
+            context.createOscillator();
+
+
+        const gain =
+            context.createGain();
+
+
+        oscillator.type =
+            "square";
+
+
+        oscillator.frequency.value =
+            880;
+
+
+        gain.gain.setValueAtTime(
+            0.001,
+            context.currentTime
+        );
+
+
+        gain.gain.exponentialRampToValueAtTime(
+            0.18,
+            context.currentTime + 0.03
+        );
+
+
+        gain.gain.exponentialRampToValueAtTime(
+            0.001,
+            context.currentTime + 0.35
+        );
+
+
+        oscillator.connect(gain);
+
+        gain.connect(
+            context.destination
+        );
+
+
+        oscillator.start();
+
+
+        oscillator.stop(
+            context.currentTime + 0.35
+        );
+
+
+        setTimeout(
+            function() {
+
+                context.close();
+
+            },
+            500
+        );
+
+    }
+
+
+    catch (error) {
+
+        console.log(
+            "Alert sound unavailable:",
+            error
+        );
+
+    }
+
+}
+
+
+
+/* ============================================================
+   ACKNOWLEDGE ALERT
+   ============================================================ */
+
+async function acknowledgeAlert() {
+
+    const alertBox =
+        document.getElementById(
+            "criticalAlert"
+        );
+
+
+    if (!currentAlert) {
+
+        closeEmergencyAlert();
+
+        return;
+
+    }
+
+
+    const alertId =
+        Number(
+            currentAlert.id
+        );
+
+
+    console.log(
+        "Acknowledging alert:",
+        alertId
+    );
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/alerts/" +
+                alertId +
+                "/acknowledge",
+                {
+                    method: "POST"
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Acknowledge response:",
+            data
+        );
+
+
+        if (data.success) {
+
+            showToast(
+                "✅ Alert acknowledged"
+            );
+
+        }
+
+        else {
+
+            showToast(
+                "⚠️ " +
+                (
+                    data.message ||
+                    "Could not acknowledge alert"
+                )
+            );
+
+        }
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "Acknowledge error:",
+            error
+        );
+
+
+        showToast(
+            "⚠️ Acknowledge request failed"
+        );
+
+    }
+
+
+    /*
+       IMPORTANT:
+
+       Close the emergency popup
+       regardless of API result.
+
+       The operator has clicked acknowledge,
+       so the emergency banner must disappear.
+    */
+
+    closeEmergencyAlert();
+
+
+    /*
+       Refresh alert history.
+    */
+
+    setTimeout(
+        function() {
+
+            loadAlerts();
+
+        },
+        300
+    );
+
+}
+
+
+
+/* ============================================================
+   CLOSE EMERGENCY ALERT
+   ============================================================ */
+
+function closeEmergencyAlert() {
+
+    const alertBox =
+        document.getElementById(
+            "criticalAlert"
+        );
+
+
+    if (!alertBox) {
+
+        return;
+
+    }
+
+
+    alertBox.classList.remove(
+        "show"
+    );
+
+
+    /*
+       Wait for the slide-out animation,
+       then completely hide the element.
+    */
+
+    setTimeout(
+        function() {
+
+            /*
+               Only hide if another new alert
+               has not appeared during animation.
+            */
+
+            if (
+                !alertBox.classList.contains(
+                    "show"
+                )
+            ) {
+
+                alertBox.style.display =
+                    "none";
+
+            }
+
+        },
+        350
+    );
+
+
+    currentAlert =
+        null;
+
+
+    console.log(
+        "🚨 Emergency alert closed"
+    );
+
+}
+
+
+
+/* ============================================================
+   VIEW PERSON DETAILS FROM CRITICAL ALERT
+   ============================================================ */
+
+function viewPersonDetails() {
+
+    if (!currentAlert) {
+
+        return;
+
+    }
+
+
+    findPersonAndShow(
+        currentAlert.person_name,
+        currentAlert
+    );
+
+}
+
+
+
+/* ============================================================
+   VIEW HISTORY PERSON DETAILS
+   ============================================================ */
+
+function historyPersonDetails(button) {
+
+    const alertData = {
+
+        id:
+            Number(
+                button.dataset.alertId
+            ),
+
+        person_name:
+            button.dataset.name,
+
+        camera_name:
+            button.dataset.camera,
+
+        match_time:
+            button.dataset.time,
+
+        status:
+            button.dataset.status
+
+    };
+
+
+    findPersonAndShow(
+        alertData.person_name,
+        alertData
+    );
+
+}
+
+
+
+/* ============================================================
+   FIND PERSON AND SHOW DETAILS
+   ============================================================ */
+
+async function findPersonAndShow(
+    name,
+    alertData
+) {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/person/" +
+                encodeURIComponent(name)
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Person not found"
+            );
+
+        }
+
+
+        const person =
+            await response.json();
+
+
+        document.getElementById(
+            "personName"
+        ).textContent =
+            person.name ||
+            name;
+
+
+        document.getElementById(
+            "personAge"
+        ).textContent =
+            person.age ||
+            "Not provided";
+
+
+        document.getElementById(
+            "personDescription"
+        ).textContent =
+            person.description ||
+            "No description available";
+
+
+        document.getElementById(
+            "personCamera"
+        ).textContent =
+            alertData.camera_name ||
+            "-";
+
+
+        document.getElementById(
+            "personTime"
+        ).textContent =
+            alertData.match_time ||
+            "-";
+
+
+        document.getElementById(
+            "personPhoto"
+        ).src =
+            "/person_photo/" +
+            person.id;
+
+
+        document.getElementById(
+            "personModal"
+        ).style.display =
+            "flex";
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "Person details error:",
+            error
+        );
+
+
+        showToast(
+            "Unable to load person details."
+        );
+
+    }
+
+}
+
+
+
+/* ============================================================
+   RENDER ALERT HISTORY
+   ============================================================ */
+
+function renderHistory(alerts) {
+
+    const history =
+        document.getElementById(
+            "alertHistory"
+        );
+
+
+    if (!history) {
+
+        return;
+
+    }
+
+
+    if (
+        !alerts ||
+        alerts.length === 0
+    ) {
+
+        history.innerHTML =
+
+            '<div class="no-alerts">' +
+            'No alerts yet.' +
+            '</div>';
+
+        return;
+
+    }
+
+
+    history.innerHTML = "";
+
+
+    alerts.forEach(
+        function(alert) {
+
+
+            const row =
+                document.createElement(
+                    "div"
+                );
+
+
+            row.className =
+                "alert-row";
+
+
+            const details =
+                document.createElement(
+                    "div"
+                );
+
+
+            details.className =
+                "alert-details";
+
+
+            const name =
+                document.createElement(
+                    "div"
+                );
+
+
+            name.className =
+                "alert-name";
+
+
+            name.textContent =
+                "🚨 " +
+                (
+                    alert.person_name ||
+                    "Unknown Person"
+                );
+
+
+            const camera =
+                document.createElement(
+                    "p"
+                );
+
+
+            camera.textContent =
+                "📷 Camera: " +
+                (
+                    alert.camera_name ||
+                    "Camera 1"
+                );
+
+
+            const time =
+                document.createElement(
+                    "p"
+                );
+
+
+            time.textContent =
+                "🕒 Time: " +
+                (
+                    alert.match_time ||
+                    "--"
+                );
+
+
+            const status =
+                document.createElement(
+                    "span"
+                );
+
+
+            status.className =
+                "status-badge";
+
+
+            if (
+                alert.status ===
+                "Acknowledged"
+            ) {
+
+                status.classList.add(
+                    "acknowledged"
+                );
+
+            }
+
+
+            status.textContent =
+                alert.status ||
+                "Pending Verification";
+
+
+            details.appendChild(
+                name
+            );
+
+
+            details.appendChild(
+                camera
+            );
+
+
+            details.appendChild(
+                time
+            );
+
+
+            details.appendChild(
+                status
+            );
+
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+
+            button.className =
+                "history-button";
+
+
+            button.textContent =
+                "👤 VIEW DETAILS";
+
+
+            button.addEventListener(
+                "click",
+                function() {
+
+                    historyPersonDetailsFromAlert(
+                        alert
+                    );
+
+                }
+            );
+
+
+            row.appendChild(
+                details
+            );
+
+
+            row.appendChild(
+                button
+            );
+
+
+            history.appendChild(
+                row
+            );
+
+        }
+    );
+
+}
+
+
+
+/* ============================================================
+   HISTORY PERSON DETAILS
+   ============================================================ */
+
+function historyPersonDetailsFromAlert(
+    alert
+) {
+
+    findPersonAndShow(
+        alert.person_name,
+        alert
+    );
+
+}
+
+
+
+/* ============================================================
+   CLOSE MODAL
+   ============================================================ */
+
+function closeModal() {
+
+    document.getElementById(
+        "personModal"
+    ).style.display =
+        "none";
+
+}
+
+
+
+/* ============================================================
+   CLICK OUTSIDE MODAL
+   ============================================================ */
+
+window.addEventListener(
+    "click",
+    function(event) {
+
+        const modal =
+            document.getElementById(
+                "personModal"
+            );
+
+
+        if (
+            event.target ===
+            modal
+        ) {
+
+            closeModal();
+
+        }
+
+    }
+);
+
+
+
+/* ============================================================
+   ESC KEY
+   ============================================================ */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key ===
+            "Escape"
+        ) {
+
+            /*
+               If person modal is open,
+               close it.
+            */
+
+            const modal =
+                document.getElementById(
+                    "personModal"
+                );
+
+
+            if (
+                modal.style.display ===
+                "flex"
+            ) {
+
+                closeModal();
+
+                return;
+
+            }
+
+
+            /*
+               Otherwise exit fullscreen.
+            */
+
+            if (
+                document.fullscreenElement
+            ) {
+
+                document.exitFullscreen();
+
+            }
+
+        }
+
+    }
+);
+
+
+
+/* ============================================================
+   FULLSCREEN
+   ============================================================ */
+
+async function toggleFullscreen() {
+
+    const cameraWrapper =
+        document.getElementById(
+            "cameraWrapper"
+        );
+
+
+    if (!cameraWrapper) {
+
+        return;
+
+    }
+
+
+    try {
+
+        if (
+            !document.fullscreenElement
+        ) {
+
+            /*
+               Save the original location of
+               emergency alert BEFORE entering
+               fullscreen.
+            */
+
+            const alertBox =
+                document.getElementById(
+                    "criticalAlert"
+                );
+
+
+            if (
+                alertBox &&
+                !alertOriginalParent
+            ) {
+
+                alertOriginalParent =
+                    alertBox.parentNode;
+
+
+                alertOriginalNextSibling =
+                    alertBox.nextSibling;
+
+            }
+
+
+            await cameraWrapper.requestFullscreen();
+
+        }
+
+        else {
+
+            await document.exitFullscreen();
+
+        }
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "Fullscreen error:",
+            error
+        );
+
+        showToast(
+            "Fullscreen is not available."
+        );
+
+    }
+
+}
+
+
+
+/* ============================================================
+   FULLSCREEN ALERT HANDLING
+   ============================================================ */
+
+function handleFullscreenChange() {
+
+    const alertBox =
+        document.getElementById(
+            "criticalAlert"
+        );
+
+
+    const cameraWrapper =
+        document.getElementById(
+            "cameraWrapper"
+        );
+
+
+    if (
+        !alertBox ||
+        !cameraWrapper
+    ) {
+
+        return;
+
+    }
+
+
+    /* ========================================================
+       ENTER FULLSCREEN
+       ======================================================== */
+
+    if (
+        document.fullscreenElement
+    ) {
+
+        console.log(
+            "⛶ Entered fullscreen"
+        );
+
+
+        /*
+           If an emergency alert is visible,
+           move it inside the fullscreen element.
+        */
+
+        if (
+            alertBox.classList.contains(
+                "show"
+            )
+        ) {
+
+            cameraWrapper.appendChild(
+                alertBox
+            );
+
+
+            console.log(
+                "🚨 Emergency alert moved into fullscreen"
+            );
+
+        }
+
+    }
+
+
+    /* ========================================================
+       EXIT FULLSCREEN
+       ======================================================== */
+
+    else {
+
+        console.log(
+            "Exited fullscreen"
+        );
+
+
+        /*
+           Put emergency alert back at BODY level.
+
+           This restores its fixed-to-screen behaviour
+           for normal dashboard scrolling.
+        */
+
+        if (
+            alertOriginalParent
+        ) {
+
+            if (
+                alertOriginalNextSibling &&
+                alertOriginalNextSibling.parentNode ===
+                alertOriginalParent
+            ) {
+
+                alertOriginalParent.insertBefore(
+                    alertBox,
+                    alertOriginalNextSibling
+                );
+
+            }
+
+            else {
+
+                alertOriginalParent.appendChild(
+                    alertBox
+                );
+
+            }
+
+        }
+
+
+        console.log(
+            "🚨 Emergency alert restored to dashboard"
+        );
+
+    }
+
+}
+
+
+
+document.addEventListener(
+    "fullscreenchange",
+    handleFullscreenChange
+);
+
+
+
+/* ============================================================
+   CAMERA HEALTH
+   ============================================================ */
+
+async function loadCameraHealth() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/camera-health",
+                {
+                    cache: "no-store"
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Camera health API failed"
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        /* =====================================================
+           MAIN STATUS
+           ===================================================== */
+
+        const cameraStatus =
+            document.getElementById(
+                "cameraStatus"
+            );
+
+
+        const healthStatus =
+            document.getElementById(
+                "healthStatus"
+            );
+
+
+        if (cameraStatus) {
+
+            cameraStatus.textContent =
+                data.status ||
+                "OFFLINE";
+
+
+            if (
+                data.status ===
+                "ONLINE"
+            ) {
+
+                cameraStatus.style.color =
+                    "#16a34a";
+
+            }
+
+            else if (
+                data.status ===
+                "FROZEN"
+            ) {
+
+                cameraStatus.style.color =
+                    "#f59e0b";
+
+            }
+
+            else {
+
+                cameraStatus.style.color =
+                    "#dc2626";
+
+            }
+
+        }
+
+
+        if (healthStatus) {
+
+            healthStatus.textContent =
+                data.status ||
+                "OFFLINE";
+
+
+            if (
+                data.status ===
+                "ONLINE"
+            ) {
+
+                healthStatus.style.color =
+                    "#16a34a";
+
+            }
+
+            else if (
+                data.status ===
+                "FROZEN"
+            ) {
+
+                healthStatus.style.color =
+                    "#f59e0b";
+
+            }
+
+            else {
+
+                healthStatus.style.color =
+                    "#dc2626";
+
+            }
+
+        }
+
+
+        /* =====================================================
+           FPS
+           ===================================================== */
+
+        const fps =
+            Number(
+                data.fps || 0
+            );
+
+
+        document.getElementById(
+            "cameraFPS"
+        ).textContent =
+            fps.toFixed(1);
+
+
+        document.getElementById(
+            "healthFPS"
+        ).textContent =
+            fps.toFixed(1);
+
+
+        /* =====================================================
+           FACES
+           ===================================================== */
+
+        const faces =
+            Number(
+                data.faces || 0
+            );
+
+
+        document.getElementById(
+            "healthFaces"
+        ).textContent =
+            faces;
+
+
+        document.getElementById(
+            "faceCountChip"
+        ).textContent =
+            "👤 Faces: " +
+            faces;
+
+
+        /* =====================================================
+           CAMERA ID
+           ===================================================== */
+
+        document.getElementById(
+            "healthCameraId"
+        ).textContent =
+            data.camera_id ??
+            "-";
+
+
+        /* =====================================================
+           RECONNECTS
+           ===================================================== */
+
+        document.getElementById(
+            "cameraReconnects"
+        ).textContent =
+            data.reconnects || 0;
+
+
+        document.getElementById(
+            "healthReconnects"
+        ).textContent =
+            data.reconnects || 0;
+
+
+        /* =====================================================
+           LAST FRAME
+           ===================================================== */
+
+        document.getElementById(
+            "healthLastFrame"
+        ).textContent =
+            data.last_frame ||
+            "-";
+
+
+        /* =====================================================
+           LAST CHECK
+           ===================================================== */
+
+        document.getElementById(
+            "healthLastCheck"
+        ).textContent =
+            new Date().toLocaleTimeString();
+
+
+        /* =====================================================
+           CAMERA OFFLINE OVERLAY
+           ===================================================== */
+
+        const offline =
+            document.getElementById(
+                "cameraOffline"
+            );
+
+
+        if (offline) {
+
+            if (
+                data.status ===
+                "ONLINE"
+            ) {
+
+                offline.classList.remove(
+                    "show"
+                );
+
+            }
+
+            else {
+
+                offline.classList.add(
+                    "show"
+                );
+
+
+                const subtitle =
+                    offline.querySelector(
+                        ".offline-subtitle"
+                    );
+
+
+                if (subtitle) {
+
+                    subtitle.textContent =
+                        "Camera " +
+                        (
+                            data.status ||
+                            "OFFLINE"
+                        );
+
+                }
+
+            }
+
+        }
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "Camera health error:",
+            error
+        );
+
+
+        document.getElementById(
+            "cameraStatus"
+        ).textContent =
+            "OFFLINE";
+
+
+        document.getElementById(
+            "cameraStatus"
+        ).style.color =
+            "#dc2626";
+
+
+        document.getElementById(
+            "healthStatus"
+        ).textContent =
+            "OFFLINE";
+
+
+        document.getElementById(
+            "healthStatus"
+        ).style.color =
+            "#dc2626";
+
+
+        const offline =
+            document.getElementById(
+                "cameraOffline"
+            );
+
+
+        if (offline) {
+
+            offline.classList.add(
+                "show"
+            );
+
+        }
+
+    }
+
+}
+
+
+
+/* ============================================================
+   START CAMERA
+   ============================================================ */
+
+async function startCamera() {
+
+    const startButton =
+        document.getElementById(
+            "startCameraBtn"
+        );
+
+
+    const stopButton =
+        document.getElementById(
+            "stopCameraBtn"
+        );
+
+
+    startButton.disabled =
+        true;
+
+
+    startButton.textContent =
+        "⏳ STARTING...";
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/camera-control",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            action: "start"
+                        })
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Start response:",
+            data
+        );
+
+
+        if (data.success) {
+
+            showToast(
+                "🟢 Camera monitoring started"
+            );
+
+
+            /*
+               Give Python process a moment
+               to open the camera.
+            */
+
+            setTimeout(
+                function() {
+
+                    updateCameraProcessStatus();
+
+                    loadCameraHealth();
+
+                },
+                1000
+            );
+
+        }
+
+        else {
+
+            showToast(
+                "⚠️ " +
+                (
+                    data.message ||
+                    "Could not start camera"
+                )
+            );
+
+        }
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "Camera start error:",
+            error
+        );
+
+
+        showToast(
+            "❌ Could not start camera monitoring"
+        );
+
+    }
+
+
+    startButton.disabled =
+        false;
+
+
+    startButton.textContent =
+        "🟢 START MONITORING";
+
+}
+
+
+
+/* ============================================================
+   STOP CAMERA
+   ============================================================ */
+
+async function stopCamera() {
+
+    const stopButton =
+        document.getElementById(
+            "stopCameraBtn"
+        );
+
+
+    stopButton.disabled =
+        true;
+
+
+    stopButton.textContent =
+        "⏳ STOPPING...";
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/camera-control",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            action: "stop"
+                        })
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Stop response:",
+            data
+        );
+
+
+        if (data.success) {
+
+            showToast(
+                "🔴 Camera monitoring stopped"
+            );
+
+        }
+
+        else {
+
+            showToast(
+                "⚠️ " +
+                (
+                    data.message ||
+                    "Camera stop failed"
+                )
+            );
+
+        }
+
+
+        updateCameraProcessStatus();
+
+        loadCameraHealth();
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "Camera stop error:",
+            error
+        );
+
+
+        showToast(
+            "❌ Could not stop camera"
+        );
+
+    }
+
+
+    stopButton.disabled =
+        false;
+
+
+    stopButton.textContent =
+        "🔴 STOP MONITORING";
+
+}
+
+
+
+/* ============================================================
+   CAMERA PROCESS STATUS
+   ============================================================ */
+
+async function updateCameraProcessStatus() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/camera-process",
+                {
+                    cache: "no-store"
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Process status API failed"
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        const status =
+            document.getElementById(
+                "monitorStatus"
+            );
+
+
+        const startButton =
+            document.getElementById(
+                "startCameraBtn"
+            );
+
+
+        const stopButton =
+            document.getElementById(
+                "stopCameraBtn"
+            );
+
+
+        if (data.running) {
+
+            status.textContent =
+                "● MONITORING ACTIVE";
+
+
+            status.className =
+                "monitor-status status-online";
+
+
+            startButton.disabled =
+                true;
+
+
+            stopButton.disabled =
+                false;
+
+
+            document.getElementById(
+                "systemStatus"
+            ).textContent =
+                "ACTIVE";
+
+
+            document.getElementById(
+                "systemStatus"
+            ).style.color =
+                "#16a34a";
+
+        }
+
+        else {
+
+            status.textContent =
+                "● OFFLINE";
+
+
+            status.className =
+                "monitor-status status-offline";
+
+
+            startButton.disabled =
+                false;
+
+
+            stopButton.disabled =
+                true;
+
+
+            document.getElementById(
+                "systemStatus"
+            ).textContent =
+                "OFFLINE";
+
+
+            document.getElementById(
+                "systemStatus"
+            ).style.color =
+                "#dc2626";
+
+        }
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "Process status error:",
+            error
+        );
+
+    }
+
+}
+
+
+
+/* ============================================================
+   INITIAL DASHBOARD LOAD
+   ============================================================ */
+
+loadAlerts();
+
+loadCameraHealth();
+
+updateCameraProcessStatus();
+
+
+
+/* ============================================================
+   AUTO REFRESH
+   ============================================================ */
+
+/*
+   Alerts every 3 seconds.
+*/
+
+setInterval(
+    loadAlerts,
+    3000
+);
+
+
+/*
+   Camera health every 2 seconds.
+*/
+
+setInterval(
+    loadCameraHealth,
+    2000
+);
+
+
+/*
+   Camera process status every 2 seconds.
+*/
+
+setInterval(
+    updateCameraProcessStatus,
+    2000
+);
+
+
+</script>
+
+
+</body>
+
+</html>
