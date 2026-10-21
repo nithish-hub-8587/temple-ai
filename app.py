@@ -562,7 +562,8 @@ def create_database():
         "Database and tables are ready!"
     )
 
-
+# Initialize database when Flask/Gunicorn imports this module
+create_database()
 # =========================================================
 # MAIN DASHBOARD
 # =========================================================
